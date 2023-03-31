@@ -10,6 +10,9 @@ public class Client {
     int serverID = 0;
     int jobID = 0;
     int nRecs = 0;
+    String sMessage = "";
+    String strnRecs = "";
+    String[] arrstrnRecs;
 
    
     public Client(String address, int port) throws Exception{
@@ -52,12 +55,25 @@ public class Client {
             System.out.println("Server message: " + this.inputStream.readLine());
             //request server state information
             send("GETS All");
-            System.out.println("Client message: GETS All");
+            System.out.println("Client message: GETS All"); 
             //server response
-            System.out.println("Server message: " + this.inputStream.readLine());
+            strnRecs = this.inputStream.readLine();
+            System.out.println("Server message: string is " + strnRecs); //e.g. DATA nRecs recLen
+           
+            arrstrnRecs = strnRecs.split(" "); //converts to array of strings
+            nRecs = Integer.parseInt(arrstrnRecs[1]); //convert nRecs to int
+            
             //acknowledge server
             send("OK");
             System.out.println("Client message: OK");
+
+            for (int i = 0; i < nRecs; i++) {
+                //Receive each record
+                //Keep track of largest server type and number of servers of that type
+            }
+
+        
+            //server sends job list
              
 
             //Receive message: JOBN, JCPL, NONE
@@ -82,9 +98,8 @@ public class Client {
                 //sendMessage("SCHD ")  schedule job
             //}
         //}
-        for (int i = 0; i < 5; i++) {
-            System.out.println("Server message: "+ this.inputStream.readLine());
-        }  
+
+    
         send("OK");
         System.out.println("Client says: OK");
 
