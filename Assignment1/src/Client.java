@@ -36,19 +36,18 @@ public class Client {
         send("HELO");
         System.out.println("Client message: HELO");
         //receive OK
-        System.out.println("Server message: " + this.inputStream.readLine());
+        sMessage = this.inputStream.readLine();
+        System.out.println("Server message: " + sMessage);
         //authorise user
         String username = System.getProperty("user.name"); 
         send("AUTH " + username);
         System.out.println("Client message: AUTH");
         //receive OK
-        System.out.println("Server message: " + this.inputStream.readLine());
+        sMessage = this.inputStream.readLine();
+        System.out.println("Server message: " + sMessage);
 
-        //while (message !NONE) {
-
-            //jobs 1-n
-
-            //send REDY
+        
+        while (sMessage != "") {
             send("REDY"); 
             System.out.println("Client message: REDY");
             //server response
@@ -71,8 +70,7 @@ public class Client {
                 //Receive each record
                 //Keep track of largest server type and number of servers of that type
             }
-
-        
+        } 
             //server sends job list
              
 
@@ -99,7 +97,7 @@ public class Client {
             //}
         //}
 
-    
+            
         send("OK");
         System.out.println("Client says: OK");
 
