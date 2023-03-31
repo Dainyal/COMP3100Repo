@@ -30,12 +30,12 @@ public class Client {
 
     public void byClient() throws Exception{
         //send HELO to server
-        sendMessage("HELO");
+        send("HELO");
         //receive OK
         System.out.println("Server says: "+this.inputStream.readLine());
         //authorise user
         String username = System.getProperty("user.name"); 
-        sendMessage("AUTH " + username);
+        send("AUTH " + username);
         //receive OK
         System.out.println("Server says: "+ this.inputStream.readLine());
 
@@ -44,14 +44,14 @@ public class Client {
             //jobs 1-n
 
             //send REDY
-            sendMessage("REDY"); //when we send ready server sends us an update, usually a job from the USER side of the server
+            send("REDY"); //when we send ready server sends us an update, usually a job from the USER side of the server
                                         //if I need get JCPL -> message from the Server Side of the simulator 
 
 
             //Receive message: JOBN, JCPL, NONE
             //identify largest server type
             while (serverID <= 9 && jobID <= 9){
-                sendMessage("SCHD "+ jobID + " xlarge " + serverID);
+                send("SCHD "+ jobID + " xlarge " + serverID);
                 jobID ++; 
                 serverID ++;      
             }
@@ -73,12 +73,12 @@ public class Client {
     
         System.out.println("Server says: "+ this.inputStream.readLine());
         //send QUIT
-        sendMessage("QUIT");
+        send("QUIT");
         //receive QUIT
         System.out.println("Server says: "+ this.inputStream.readLine());
     }
 
-    public void sendMessage(String message ) throws Exception{
+    public void send(String message ) throws Exception{
         this.outStream.write( (message + "\n").getBytes("UTF-8"));
     }
 }
