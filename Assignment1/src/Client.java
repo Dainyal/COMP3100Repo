@@ -31,30 +31,42 @@ public class Client {
     public void byClient() throws Exception{
         //send HELO to server
         send("HELO");
+        System.out.println("Client message: HELO");
         //receive OK
-        System.out.println("Server says: "+this.inputStream.readLine());
+        System.out.println("Server message: " + this.inputStream.readLine());
         //authorise user
         String username = System.getProperty("user.name"); 
         send("AUTH " + username);
+        System.out.println("Client message: AUTH");
         //receive OK
-        System.out.println("Server says: "+ this.inputStream.readLine());
+        System.out.println("Server message: " + this.inputStream.readLine());
 
         //while (message !NONE) {
 
             //jobs 1-n
 
             //send REDY
-            send("REDY"); //when we send ready server sends us an update, usually a job from the USER side of the server
-                                        //if I need get JCPL -> message from the Server Side of the simulator 
-
+            send("REDY"); 
+            System.out.println("Client message: REDY");
+            //server response
+            System.out.println("Server message: " + this.inputStream.readLine());
+            //request server state information
+            send("GETS All");
+            System.out.println("Client message: GETS All");
+            //server response
+            System.out.println("Server message: " + this.inputStream.readLine());
+            //acknowledge server
+            send("OK");
+            System.out.println("Client message: OK");
+             
 
             //Receive message: JOBN, JCPL, NONE
             //identify largest server type
-            while (serverID <= 9 && jobID <= 9){
-                send("SCHD "+ jobID + " xlarge " + serverID);
-                jobID ++; 
-                serverID ++;      
-            }
+            // while (serverID <= 9 && jobID <= 9){
+            //     send("SCHD "+ jobID + " xlarge " + serverID);
+            //     jobID ++; 
+            //     serverID ++;      
+            // }
 
             //send gets message             e.g. GETS All
             //receive DATA nRecs recSize    e.g. DATA 5 124
@@ -70,18 +82,35 @@ public class Client {
                 //sendMessage("SCHD ")  schedule job
             //}
         //}
-    
-        System.out.println("Server says: "+ this.inputStream.readLine());
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Server message: "+ this.inputStream.readLine());
+        }  
+        send("OK");
+        System.out.println("Client says: OK");
+
+        System.out.println("Server message: "+ this.inputStream.readLine());
         //send QUIT
         send("QUIT");
+        System.out.println("Client message: QUIT");
         //receive QUIT
-        System.out.println("Server says: "+ this.inputStream.readLine());
+        System.out.println("Server message: "+ this.inputStream.readLine());
     }
 
-    public void send(String message ) throws Exception{
-        this.outStream.write( (message + "\n").getBytes("UTF-8"));
+    public void send(String message) throws Exception{
+        this.outStream.write((message + "\n").getBytes("UTF-8"));
     }
 }
 
-//  compile java project        java -cp bin DsClient
-//  run server                  ./ds-server -c ../../configs/sample-configs/ds-sample-config01.xml -n -v all
+//job: type,id,submitTime,estRunTime,cores,memory,disk
+
+//HELO
+//AUTH DANIEL
+//REDY
+//GETS All
+//OK
+//QUIT
+
+
+//  compile                  javac src\*.java -d bin
+//  run java project         java -cp bin Client
+//  run server               ./ds-server -c ../../configs/sample-configs/ds-sample-config01.xml -n -v all
