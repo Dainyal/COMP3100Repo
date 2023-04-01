@@ -8,11 +8,16 @@ public class Client {
     BufferedReader inputStream;
     //initialise server and job ID variables
     int serverID = 0;
-    int jobID = 0;
+   
     int nRecs = 0;
     String sMessage = "";
+    String sMessagePrev = "";
+    String[] arrsMessage;
+    String sMessageSecond = "";
     String strnRecs = "";
     String[] arrstrnRecs;
+    String serverMessage = "";
+    String largestServer = "";
 
    
     public Client(String address, int port) throws Exception{
@@ -22,7 +27,7 @@ public class Client {
     }
 
     public static void main(String[] args) throws Exception{
-        Client c = new Client("192.168.0.69",50000);
+        Client c = new Client("192.168.120.197",50000);
         c.byClient();
         //close socket
         c.mySocket.close();
@@ -35,23 +40,26 @@ public class Client {
         //send HELO to server
         send("HELO");
         System.out.println("Client message: HELO");
+
         //receive OK
         sMessage = this.inputStream.readLine();
         System.out.println("Server message: " + sMessage);
+
         //authorise user
         String username = System.getProperty("user.name"); 
         send("AUTH " + username);
         System.out.println("Client message: AUTH");
+
         //receive OK
         sMessage = this.inputStream.readLine();
         System.out.println("Server message: " + sMessage);
 
         
-        while (sMessage != "") {
+        // while (serverMessage != "") {
             send("REDY"); 
             System.out.println("Client message: REDY");
             //server response
-            System.out.println("Server message: " + this.inputStream.readLine());
+            System.out.println("Server message: " + this.inputStream.readLine()); //JOBN 37 0 653 3 700 3800
             //request server state information
             send("GETS All");
             System.out.println("Client message: GETS All"); 
@@ -65,12 +73,19 @@ public class Client {
             //acknowledge server
             send("OK");
             System.out.println("Client message: OK");
+            System.out.println("line 68");
 
             for (int i = 0; i < nRecs; i++) {
+                sMessage = this.inputStream.readLine();
+                arrsMessage = sMessage.split(" ");
+                largestServer = arrsMessage[0]; //keep track of largest server name
+                serverID = Integer.parseInt(arrsMessage[1]); //keep track of how many servers of 1 type
+                System.out.println("largest server: " + largestServer);
+                System.out.println("serverID " + serverID);
                 //Receive each record
                 //Keep track of largest server type and number of servers of that type
             }
-        } 
+        //} 
             //server sends job list
              
 
