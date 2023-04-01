@@ -17,7 +17,14 @@ public class Client {
     String strnRecs = "";
     String[] arrstrnRecs;
     String serverMessage = "";
-    String largestServer = "";
+    String largestServerName = "";
+    String currentServerName = "";
+    String[] jobType;
+    int currentServerID = 0;
+    int firstServerID = 0;
+    int currentCores = 0;
+    int firstCore = 0;
+    int serverAmount = 0;
 
    
     public Client(String address, int port) throws Exception{
@@ -54,12 +61,13 @@ public class Client {
         sMessage = this.inputStream.readLine();
         System.out.println("Server message: " + sMessage);
 
-        
-        // while (serverMessage != "") {
+        while (!this.inputStream.readLine().equals("NONE")) {
             send("REDY"); 
             System.out.println("Client message: REDY");
             //server response
-            System.out.println("Server message: " + this.inputStream.readLine()); //JOBN 37 0 653 3 700 3800
+            sMessage = this.inputStream.readLine();
+            System.out.println("Server message: " + sMessage); //JOBN 37 0 653 3 700 3800
+            jobType = sMessage.split(" ");
             //request server state information
             send("GETS All");
             System.out.println("Client message: GETS All"); 
@@ -78,13 +86,32 @@ public class Client {
             for (int i = 0; i < nRecs; i++) {
                 sMessage = this.inputStream.readLine();
                 arrsMessage = sMessage.split(" ");
-                largestServer = arrsMessage[0]; //keep track of largest server name
-                serverID = Integer.parseInt(arrsMessage[1]); //keep track of how many servers of 1 type
-                System.out.println("largest server: " + largestServer);
-                System.out.println("serverID " + serverID);
-                //Receive each record
-                //Keep track of largest server type and number of servers of that type
+                currentServerName = arrsMessage[0];
+                //joon
+                currentServerID = Integer.parseInt(arrsMessage[1]);
+                //2
+                currentCores = Integer.parseInt(arrsMessage[4]);
+                //6
+                serverAmount++;
+                if (!currentServerName.equals(largestServerName)) {
+                    serverAmount = 1;
+                }
+                if (!currentServerName.equals(largestServerName) || (currentCores != firstCore)) {
+                    largestServerName = currentServerName; //keep track of largest server name
+                    //joon
+                    firstServerID = currentServerID;
+                    //1
+                    firstCore = currentCores;
+                    //6
+                }
             }
+
+            // if (jobType[0].equals("JOBN")) {
+            //     send("SCHD")
+            // }
+        }
+
+            
         //} 
             //server sends job list
              
