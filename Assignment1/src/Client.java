@@ -19,12 +19,14 @@ public class Client {
     String serverMessage = "";
     String largestServerName = "";
     String currentServerName = "";
-    String[] jobType;
+    String[] job;
+    String loopMessage = "";
     int currentServerID = 0;
     int firstServerID = 0;
     int currentCores = 0;
     int firstCore = 0;
     int serverAmount = 0;
+    int count = 0;
 
    
     public Client(String address, int port) throws Exception{
@@ -60,14 +62,17 @@ public class Client {
         //receive OK
         sMessage = this.inputStream.readLine();
         System.out.println("Server message: " + sMessage);
+        System.out.println("Before while loop");
 
-        while (!this.inputStream.readLine().equals("NONE")) {
+
+        while (!sMessage.equals("NONE")) {
+           
             send("REDY"); 
             System.out.println("Client message: REDY");
             //server response
-            sMessage = this.inputStream.readLine();
-            System.out.println("Server message: " + sMessage); //JOBN 37 0 653 3 700 3800
-            jobType = sMessage.split(" ");
+            loopMessage = this.inputStream.readLine();
+            System.out.println("Server message: " + loopMessage); //JOBN 37 0 653 3 700 3800
+            job = loopMessage.split(" ");
             //request server state information
             send("GETS All");
             System.out.println("Client message: GETS All"); 
@@ -104,11 +109,14 @@ public class Client {
                     firstCore = currentCores;
                     //6
                 }
+                // count++;
+                // System.out.println("For loop: " + count);
+                // System.out.println("job type: " + jobType[0]);
             }
-
-            // if (jobType[0].equals("JOBN")) {
-            //     send("SCHD")
-            // }
+            send("OK");
+            if (job[0].equals("JOBN")) {
+                send("SCHD" + job[2] + " " + largestServerName + " " + firstCore);
+            }
         }
 
             
