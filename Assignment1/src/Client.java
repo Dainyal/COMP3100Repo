@@ -19,15 +19,16 @@ public class Client {
     String serverMessage = "";
     String largestServerName = "";
     String currentServerName = "";
-    String[] job;
+    String[] arrJobType;
+    String jobType = "";
     String loopMessage = "";
     int currentServerID = 0;
-    int firstServerID = 0;
-    int currentCores = 0;
-    int firstCore = 0;
+    int largestServerID = 0;
+    int currentCore = 0;
+    int largestCore = 0;
     int serverAmount = 0;
     int count = 0;
-
+    int largestServerAmount = 0;
    
     public Client(String address, int port) throws Exception{
           mySocket = new Socket(address, port);
@@ -36,7 +37,7 @@ public class Client {
     }
 
     public static void main(String[] args) throws Exception{
-        Client c = new Client("192.168.120.197",50000);
+        Client c = new Client("192.168.0.69",50000);
         c.byClient();
         //close socket
         c.mySocket.close();
@@ -72,7 +73,9 @@ public class Client {
             //server response
             loopMessage = this.inputStream.readLine();
             System.out.println("Server message: " + loopMessage); //JOBN 37 0 653 3 700 3800
-            job = loopMessage.split(" ");
+            arrJobType = loopMessage.split(" ");
+            jobType = arrJobType[0]; //JOBN
+
             //request server state information
             send("GETS All");
             System.out.println("Client message: GETS All"); 
@@ -86,66 +89,34 @@ public class Client {
             //acknowledge server
             send("OK");
             System.out.println("Client message: OK");
-            System.out.println("line 68");
-
+            //xxlarge 0 inactive -1 16
             for (int i = 0; i < nRecs; i++) {
                 sMessage = this.inputStream.readLine();
                 arrsMessage = sMessage.split(" ");
                 currentServerName = arrsMessage[0];
-                //joon
+                //xxlarge
                 currentServerID = Integer.parseInt(arrsMessage[1]);
-                //2
-                currentCores = Integer.parseInt(arrsMessage[4]);
-                //6
-                serverAmount++;
+                //0
+                currentCore = Integer.parseInt(arrsMessage[4]);
+                //16
+                serverAmount++; 
+
+                //if new server name
                 if (!currentServerName.equals(largestServerName)) {
-                    serverAmount = 1;
+                    largestServerAmount = serverAmount-1; //find amount of largest server type
+                    if (currentCore > largestCore) {
+                        largestCore = currentCore;
+                        largestServerName = currentServerName;
+                        largestServerID = currentServerID;
+                        serverAmount = 1;
+                    }
                 }
-                if (!currentServerName.equals(largestServerName) || (currentCores != firstCore)) {
-                    largestServerName = currentServerName; //keep track of largest server name
-                    //joon
-                    firstServerID = currentServerID;
-                    //1
-                    firstCore = currentCores;
-                    //6
-                }
-                // count++;
-                // System.out.println("For loop: " + count);
-                // System.out.println("job type: " + jobType[0]);
             }
             send("OK");
-            if (job[0].equals("JOBN")) {
-                send("SCHD" + job[2] + " " + largestServerName + " " + firstCore);
+            if (jobType.equals("JOBN")) {
+                send("SCHD " + arrJobType[2] + " " + largestServerName + " " + largestServerAmount);
             }
         }
-
-            
-        //} 
-            //server sends job list
-             
-
-            //Receive message: JOBN, JCPL, NONE
-            //identify largest server type
-            // while (serverID <= 9 && jobID <= 9){
-            //     send("SCHD "+ jobID + " xlarge " + serverID);
-            //     jobID ++; 
-            //     serverID ++;      
-            // }
-
-            //send gets message             e.g. GETS All
-            //receive DATA nRecs recSize    e.g. DATA 5 124
-            //send OK
-
-            // for (int i = 0; i < nRecs; i++) {
-                //receive each record
-                //keep track of largest server type and number of servers of that type
-            // }
-            //send OK
-            //receive .
-            // if (message == JOBN) {
-                //sendMessage("SCHD ")  schedule job
-            //}
-        //}
 
             
         send("OK");
@@ -165,13 +136,6 @@ public class Client {
 }
 
 //job: type,id,submitTime,estRunTime,cores,memory,disk
-
-//HELO
-//AUTH DANIEL
-//REDY
-//GETS All
-//OK
-//QUIT
 
 
 //  compile                  javac src\*.java -d bin
