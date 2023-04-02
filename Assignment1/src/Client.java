@@ -8,20 +8,7 @@ public class Client {
     BufferedReader inputStream;
     //initialise server and job ID variables
     int serverID = 0;
-   
     int nRecs = 0;
-    String sMessage = "";
-    String sMessagePrev = "";
-    String[] arrsMessage;
-    String sMessageSecond = "";
-    String strnRecs = "";
-    String[] arrstrnRecs;
-    String serverMessage = "";
-    String largestServerName = "";
-    String currentServerName = "";
-    String[] arrJobType;
-    String jobType = "";
-    String loopMessage = "";
     int currentServerID = 0;
     int largestServerID = 0;
     int currentCore = 0;
@@ -31,6 +18,19 @@ public class Client {
     int largestServerAmount = 0;
     int numJobs = 0;
     boolean firstTime = true;
+    String sMessage = "";
+    String sMessagePrev = ""; 
+    String sMessageSecond = "";
+    String strnRecs = ""; 
+    String serverMessage = "";
+    String largestServerName = "";
+    String currentServerName = "";
+    String jobType = "";
+    String loopMessage = "";
+    String[] arrJobType;
+    String[] arrsMessage;
+    String[] arrstrnRecs;
+   
 
     public Client(String address, int port) throws Exception{
           mySocket = new Socket(address, port);
@@ -69,8 +69,7 @@ public class Client {
         
 
         while (!jobType.equals("NONE")) { 
-            // count++;
-            // System.out.println("Count " + count);
+            System.out.println(" before jobType: " + jobType);
             send("REDY"); 
             System.out.println("Client message: REDY");
             //server response
@@ -79,22 +78,24 @@ public class Client {
             arrJobType = loopMessage.split(" ");
             jobType = arrJobType[0]; //JOBN
 
-            if (jobType != "JCPL") {
-                if (firstTime == true) {
-                    firstTime = false;
+            if (jobType.equals("JCPL")) {
+                continue;
+            }          
+
+            if (firstTime == true) {
+                firstTime = false;
                 //request server state information
                 send("GETS All");
                 System.out.println("Client message: GETS All"); 
                 //server response
                 strnRecs = this.inputStream.readLine();
                 System.out.println("Server message: string is " + strnRecs); //e.g. DATA nRecs recLen
-    
                 arrstrnRecs = strnRecs.split(" "); //converts to array of strings
                 nRecs = Integer.parseInt(arrstrnRecs[1]); //convert nRecs to int
-                
                 //acknowledge server
                 send("OK");
                 System.out.println("Client message: OK");
+                System.out.println("we out here: " + jobType);
                 //xxlarge 0 inactive -1 16
                 for (int i = 0; i < nRecs; i++) {
                     sMessage = this.inputStream.readLine();
@@ -106,10 +107,7 @@ public class Client {
                     currentCore = Integer.parseInt(arrsMessage[4]);
                     //16
                     serverAmount++; 
-    
-                    //if new server name
-                    //large has 4 cores - 5 servers
-                    //xlarge has 4 cores - 8 servers
+
                     if (!currentServerName.equals(largestServerName)) {
                         if (currentCore > largestCore) {
                             largestCore = currentCore;
@@ -118,30 +116,19 @@ public class Client {
                             serverAmount = 1;
                         }
                     }
-                }
-                }              
+                }          
                 //System.out.println("Largest amount is " + largestServerAmount);
                 send("OK");
                 System.out.println(this.inputStream.readLine());   
                 System.out.println("Jobtype: " + jobType);         
-            }
+            } 
             if (jobType.equals("JOBN")) {  
-                send("SCHD " + numJobs + " " + largestServerName + " " + largestServerAmount);
+                send("SCHD " + numJobs + " " + largestServerName + " " + serverID);
                 System.out.println(this.inputStream.readLine());
                 numJobs++;       
+                serverID = (serverID + 1)%serverAmount;
             }          
-            if (numJobs >= largestServerAmount) {
-                numJobs = 0;
-            } 
-            this.inputStream.readLine(); //receive OK
         }
-
-            
-        // send("OK");
-        // System.out.println("Client says: OK");
-
-        // System.out.println("Server message: "+ this.inputStream.readLine());
-        //send QUIT
         send("QUIT");
         System.out.println("Client message: QUIT");
         //receive QUIT
@@ -149,7 +136,7 @@ public class Client {
     }
 
     public void send(String message) throws Exception{
-        this.outStream.write((message + "\n").getBytes("UTF-8"));
+         this.outStream.write((message + "\n").getBytes("UTF-8"));
         // this.outStream.flush();
     }
 }
