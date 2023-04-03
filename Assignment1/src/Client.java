@@ -38,7 +38,7 @@ public class Client {
     }
 
     public static void main(String[] args) throws Exception{
-        Client c = new Client("192.168.0.69",50000);
+        Client c = new Client("10.126.171.172",50000);
         c.byClient();
         c.mySocket.close();
         c.inputStream.close();
@@ -82,13 +82,17 @@ public class Client {
                 for (int i = 0; i < nRecs; i++) {
                     sMessage = this.inputStream.readLine();
                     arrsMessage = sMessage.split(" ");
+                   
+                        System.out.println(arrsMessage[0] + " ");
+                    
                     currentServerName = arrsMessage[0];
                     currentServerID = Integer.parseInt(arrsMessage[1]);
                     currentCore = Integer.parseInt(arrsMessage[4]);
                     serverAmount++; 
                     //Replacing largest server type
+                    
                     if (!currentServerName.equals(largestServerName)) {
-                        if (currentCore > largestCore) {
+                        if (currentCore >= largestCore) {
                             largestCore = currentCore;
                             largestServerName = currentServerName;
                             largestServerID = currentServerID;
